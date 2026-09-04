@@ -44,6 +44,8 @@ const villagers=[];
 const villagerPalette=[0x586a59,0x6e5b48,0x5c6475,0x775c58,0x4d6d70,0x776d50,0x5e5269,0x6a6656];
 for(let i=0;i<12;i++){const v=humanoid({cloth:villagerPalette[i%villagerPalette.length],skin:[0x8d674f,0xa9795a,0x704f3e,0xb48364][i%4]},.72+(i%3)*.06);v.position.set(10+i*.1,0,10);v.visible=false;v.userData.role=['hearth','home','water','garden'][i%4];scene.add(v);villagers.push(v);}
 const eren=humanoid({cloth:0x4a5969,skin:0x92705d},.92);eren.visible=false;eren.userData.role='eren';scene.add(eren);
+const raiderActors=[];for(let i=0;i<4;i++){const r=humanoid({cloth:0x4b3330,skin:0x76513f},.82);r.visible=false;r.position.set(10+i*.6,0,-1+i*.55);r.userData.speed=.75+i*.05;scene.add(r);raiderActors.push(r);}
+const echoStones=[];for(let i=0;i<8;i++){const st=new THREE.Mesh(new THREE.DodecahedronGeometry(.26+.04*(i%3),0),new THREE.MeshStandardMaterial({color:0x6b6d68,roughness:1}));const a=-1.2+i*.31;st.position.set(-.3+Math.cos(a)*(1.2+i*.08),.18,6.7+Math.sin(a)*(1.2+i*.08));st.rotation.set(Math.random(),Math.random(),Math.random());st.visible=false;scene.add(st);echoStones.push(st);}
 
 const fireLight=new THREE.PointLight(0xff8a42,2,7,2);fireLight.position.set(1.7,.8,2.6);scene.add(fireLight);
 const fire=new THREE.Mesh(new THREE.ConeGeometry(.25,.8,8),new THREE.MeshBasicMaterial({color:0xffa24e}));fire.position.set(1.7,.45,2.6);scene.add(fire);
@@ -58,7 +60,7 @@ const garden=new THREE.Group();for(let i=0;i<18;i++){const sprout=new THREE.Mesh
 const scorchMarks=[];for(let i=0;i<4;i++){const s=new THREE.Mesh(new THREE.CircleGeometry(.55+Math.random()*.45,18),new THREE.MeshBasicMaterial({color:0x17120f,transparent:true,opacity:0}));s.rotation.x=-Math.PI/2;s.position.set(1.5+i*1.35,.01,4.2+(i%2)*1.1);scene.add(s);scorchMarks.push(s)}
 
 let target={fog:.028,water:.72,settle:.08,beacon:0};
-let lastProcessedEvent='',raidDamage=0,communityPulse=0;
+let lastProcessedEvent='',raidDamage=0,communityPulse=0,raiderBurstUntil=0;
 
 function hasMemory(text){return !!state?.memory?.some(m=>m.includes(text))}
 function villagerDestination(v,i,now){
@@ -79,6 +81,7 @@ function processStoryConsequences(){
   if(!state || state.lastEvent===lastProcessedEvent)return;
   lastProcessedEvent=state.lastEvent;
   if(state.lastEvent==='raiders'){
+    raiderBurstUntil=performance.now()+6500;
     raidDamage=hasMemory('fled the ridge')?1:.58;
     scorchMarks.forEach((s,i)=>s.material.opacity=.28+raidDamage*.38*(1-i*.12));
     huts.forEach((h,i)=>{if(i<Math.ceil(raidDamage*4)){h.userData.damage=raidDamage*(.6+Math.random()*.4);h.userData.repair=0;}});
@@ -98,6 +101,7 @@ let last=performance.now(),acc=0;
 function animate(now){
   requestAnimationFrame(animate);const dt=Math.min(.05,(now-last)/1000);last=now;controls.update();acc+=dt;
   processStoryConsequences();
+  const dayWave=.5+.5*Math.sin(now*.000035);renderer.toneMappingExposure=.78+dayWave*.38;sun.position.x=-10+Math.cos(now*.000035)*7;sun.position.z=6+Math.sin(now*.000035)*5;
   scene.fog.density=lerp(scene.fog.density,target.fog,.015);water.scale.setScalar(lerp(water.scale.x,.62+target.water*.5,.02));water.material.opacity=.62+Math.sin(now*.0009)*.08;water.rotation.z=Math.sin(now*.00018)*.015;
   beacon.intensity=lerp(beacon.intensity,target.beacon,.03);beaconOrb.material.opacity=beacon.intensity>.2?1:.1;
   huts.forEach((h,i)=>{const threshold=.16+i*.085;const desired=target.settle>threshold?1:.001;const hs=lerp(h.scale.x,desired,.03);h.scale.setScalar(hs);if(h.userData.damage>0){h.userData.repair=Math.min(1,h.userData.repair+dt*(.008+.028*pressures.community+.02*pressures.abundance));h.userData.damage=Math.max(0,h.userData.damage-dt*(.006+.022*pressures.community));h.userData.roof.rotation.z=Math.sin(i)*h.userData.damage*.32;h.userData.wall.material.color.setHSL(.08,.15,.35-h.userData.damage*.12);}});
@@ -110,8 +114,11 @@ function animate(now){
 
     eren.visible=hasMemory('sheltered a stranger');if(eren.visible){const ed=new THREE.Vector3(2.1+Math.sin(now*.00018)*1.2,0,3.7+Math.cos(now*.00021)*.9);animateHumanoid(eren,ed,dt,now,.46);}
     const desiredVillagers=Math.min(villagers.length,Math.max(0,Math.floor(state.settlement*11)+Math.min(3,state.bonds)));
+    echoStones.forEach((st,i)=>st.visible=i<Math.max(0,(state.generation||1)-1));
     villagers.forEach((v,i)=>{v.visible=i<desiredVillagers;if(v.visible)animateHumanoid(v,villagerDestination(v,i,now),dt,now,.38);});
     garden.visible=garden.visible||hasMemory('planted the ash garden');if(garden.visible){garden.children.forEach((p,i)=>{const s=.55+pressures.abundance*.7+Math.sin(now*.001+i)*.025;p.scale.setScalar(s)});}
+    const raidActive=now<raiderBurstUntil;
+    raiderActors.forEach((r,i)=>{r.visible=raidActive;if(r.visible){const rd=new THREE.Vector3(5.9-i*.45,0,.7+(i%2)*.8);animateHumanoid(r,rd,dt,now,.55);}});
   }
 
   trees.forEach((tr,i)=>{tr.rotation.z=Math.sin(now*.0008+i)*(.005+.025*pressures.change);tr.rotation.x=Math.cos(now*.00065+i*.7)*(.004+.014*pressures.change)});
