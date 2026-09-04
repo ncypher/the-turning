@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Turning</title>
+<style>
+:root{
+  --bg:#080a0d; --panel:rgba(12,15,20,.82); --line:rgba(255,255,255,.10);
+  --text:#ebe8df; --muted:#aaa79f; --glow:#c6e6cf; --ember:#e7b977;
+}
+*{box-sizing:border-box} html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+#app{height:100vh;position:relative;background:radial-gradient(circle at 50% 30%,#162022 0,#090b0e 50%,#060709 100%)}
+#world{position:absolute;inset:0}
+.brand{position:absolute;top:22px;left:24px;z-index:10;pointer-events:none}
+.brand h1{font-family:Georgia,serif;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin:0;font-size:28px}
+.brand .sub{font-size:11px;letter-spacing:.23em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.hud{position:absolute;right:18px;top:18px;width:315px;max-height:calc(100vh - 36px);overflow:auto;z-index:12;background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:0 18px 50px rgba(0,0,0,.28)}
+.hud::-webkit-scrollbar{width:5px}.hud::-webkit-scrollbar-thumb{background:#39403f;border-radius:99px}
+.section{padding:0 1px 14px;border-bottom:1px solid var(--line);margin-bottom:14px}.section:last-child{border:0;margin:0;padding-bottom:0}
+.labelrow{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px}.labelrow span:first-child{font-size:12px}.val{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;color:#bbb}
+input[type=range]{width:100%;accent-color:#9fc3ad;height:4px}
+.pills{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.pill{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025)}
+.pill b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9e9f9a}.pill span{font:12px ui-monospace,SFMono-Regular,Consolas,monospace}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn{appearance:none;border:1px solid var(--line);background:rgba(255,255,255,.055);color:var(--text);border-radius:10px;padding:9px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.btn:hover{background:rgba(255,255,255,.1)}.btn.primary{border-color:rgba(198,230,207,.32);background:rgba(140,190,160,.12)}
+.chronicle{position:absolute;left:22px;bottom:20px;width:min(620px,calc(100vw - 390px));z-index:11;background:linear-gradient(180deg,rgba(10,12,15,.50),rgba(8,10,13,.86));backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:0 18px 55px rgba(0,0,0,.32)}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:#9c9a93;margin-bottom:7px}.chapter{font:500 19px Georgia,serif;margin-bottom:8px}.story{font:15px/1.55 Georgia,serif;color:#ddd9d0;min-height:72px}.meta{display:flex;gap:12px;margin-top:10px;font:10px ui-monospace,SFMono-Regular,Consolas,monospace;color:#98958e;text-transform:uppercase;letter-spacing:.08em}.moralbar{height:5px;background:#202329;border-radius:999px;overflow:hidden;margin:4px 0 8px}.moralbar i{display:block;height:100%;width:50%;background:linear-gradient(90deg,#b28c69,#b9d7c1);border-radius:999px;transition:width .8s ease}
+.soul{font:12px/1.45 Georgia,serif;color:#bcb8ae;font-style:italic;margin-top:6px}
+#omen{position:absolute;left:50%;top:20%;transform:translate(-50%,-50%);z-index:9;font:500 15px Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#f2e5c9;opacity:0;transition:opacity .6s;text-shadow:0 3px 20px #000;pointer-events:none}
+@media(max-width:900px){.hud{width:280px}.chronicle{width:calc(100vw - 320px)}.story{font-size:13px}} 
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="world"></div>
+  <div class="brand"><h1>The Turning</h1><div class="sub">A life shaped by pressure, memory & chance</div></div>
+  <div id="omen"></div>
+  <div class="chronicle">
+    <div class="eyebrow" id="dateLine">Year 1 · Early Spring</div>
+    <div class="chapter" id="chapter">Awakening beside the dead machine</div>
+    <div class="story" id="story">A traveler wakes in wet grass beneath a pale sky. Behind them, a machine large enough to have once carried a village sits silent and half-buried. They remember their name—Mara—but almost nothing else.</div>
+    <div class="meta"><span id="age">Age 24</span><span id="place">The Hollow</span><span id="generation">Life I</span></div>
+  </div>
+  <aside class="hud">
+    <div class="section">
+      <div class="eyebrow">World Pressures</div>
+      <div id="sliders"></div>
+    </div>
+    <div class="section">
+      <div class="eyebrow">Inner Weather</div>
+      <div class="pills" id="traits"></div>
+      <div class="soul" id="soulLine">Mara is wary, curious, and not yet certain what kind of person survival will require.</div>
+    </div>
+    <div class="section">
+      <div class="eyebrow">Moral Tensions</div>
+      <div id="morals"></div>
+    </div>
+    <div class="section">
+      <div class="eyebrow">Time & Retelling</div>
+      <div class="actions">
+        <button class="btn primary" id="pauseBtn">Pause</button>
+        <button class="btn" id="speedBtn">1× Time</button>
+        <button class="btn" id="nudgeBtn">Turn the Wheel</button>
+        <button class="btn" id="rebirthBtn">Rebirth</button>
+      </div>
+    </div>
+  </aside>
+</div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+__MODULE__
+</script>
+</body>
+</html>
