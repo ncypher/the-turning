@@ -19,5 +19,7 @@ module = (
     + (root / "tuning.js").read_text(encoding="utf-8")
     + "\n"
     + (root / "polish.js").read_text(encoding="utf-8")
+    + "\n"
+    + (root / "motion_fix.js").read_text(encoding="utf-8")
 )
 components.html(template.replace("__MODULE__", module), height=900, scrolling=False)
