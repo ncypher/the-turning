@@ -7,5 +7,11 @@ st.markdown("""<style>.stApp{background:#090b0f}[data-testid="stHeader"]{backgro
 
 root = Path(__file__).parent
 template = (root / "world.html").read_text(encoding="utf-8")
-module = (root / "engine.js").read_text(encoding="utf-8") + "\n" + (root / "scene.js").read_text(encoding="utf-8")
+module = (
+    (root / "engine.js").read_text(encoding="utf-8")
+    + "\n"
+    + (root / "scene.js").read_text(encoding="utf-8")
+    + "\n"
+    + (root / "tuning.js").read_text(encoding="utf-8")
+)
 components.html(template.replace("__MODULE__", module), height=900, scrolling=False)
