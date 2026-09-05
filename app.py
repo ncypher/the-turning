@@ -10,6 +10,8 @@ template = (root / "world.html").read_text(encoding="utf-8")
 module = (
     (root / "engine.js").read_text(encoding="utf-8")
     + "\n"
+    + (root / "story_arcs.js").read_text(encoding="utf-8")
+    + "\n"
     + (root / "scene.js").read_text(encoding="utf-8")
     + "\n"
     + (root / "tuning.js").read_text(encoding="utf-8")
