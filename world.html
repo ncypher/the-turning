@@ -1,11 +1,360 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>The Turning</title>
-<style>
-:root{--bg:#080a0d;--panel:rgba(12,15,20,.82);--line:rgba(255,255,255,.10);--text:#ebe8df;--muted:#aaa79f;--glow:#c6e6cf;--ember:#e7b977}
-*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}#app{height:100vh;position:relative;background:radial-gradient(circle at 50% 30%,#162022 0,#090b0e 50%,#060709 100%)}#world{position:absolute;inset:0}.brand{position:absolute;top:22px;left:24px;z-index:10;pointer-events:none}.brand h1{font-family:Georgia,serif;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin:0;font-size:28px}.brand .sub{font-size:11px;letter-spacing:.23em;text-transform:uppercase;color:var(--muted);margin-top:5px}.hud{position:absolute;right:18px;top:18px;width:315px;max-height:calc(100vh - 36px);overflow:auto;z-index:12;background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:0 18px 50px rgba(0,0,0,.28)}.hud::-webkit-scrollbar{width:5px}.hud::-webkit-scrollbar-thumb{background:#39403f;border-radius:99px}.section{padding:0 1px 14px;border-bottom:1px solid var(--line);margin-bottom:14px}.section:last-child{border:0;margin:0;padding-bottom:0}.labelrow{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px}.labelrow span:first-child{font-size:12px}.val{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;color:#bbb}input[type=range]{width:100%;accent-color:#9fc3ad;height:4px}.pills{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.pill{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025)}.pill b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#9e9f9a}.pill span{font:12px ui-monospace,SFMono-Regular,Consolas,monospace}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn{appearance:none;border:1px solid var(--line);background:rgba(255,255,255,.055);color:var(--text);border-radius:10px;padding:9px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.btn:hover{background:rgba(255,255,255,.1)}.btn.primary{border-color:rgba(198,230,207,.32);background:rgba(140,190,160,.12)}.chronicle{position:absolute;left:22px;bottom:20px;width:min(650px,calc(100vw - 390px));z-index:11;background:linear-gradient(180deg,rgba(10,12,15,.50),rgba(8,10,13,.88));backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:0 18px 55px rgba(0,0,0,.32)}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:#9c9a93;margin-bottom:7px}.chapter{font:500 19px Georgia,serif;margin-bottom:8px}.story{font:15px/1.55 Georgia,serif;color:#ddd9d0;min-height:72px}.meta{display:flex;gap:12px;margin-top:10px;font:10px ui-monospace,SFMono-Regular,Consolas,monospace;color:#98958e;text-transform:uppercase;letter-spacing:.08em}.moralbar{height:5px;background:#202329;border-radius:999px;overflow:hidden;margin:4px 0 8px}.moralbar i{display:block;height:100%;width:50%;background:linear-gradient(90deg,#b28c69,#b9d7c1);border-radius:999px;transition:width .8s ease}.soul{font:12px/1.45 Georgia,serif;color:#bcb8ae;font-style:italic;margin-top:6px}.worldchips{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px}.worldchip{border:1px solid var(--line);border-radius:8px;padding:5px 6px;background:rgba(255,255,255,.025)}.worldchip b{display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#888}.worldchip span{font:11px ui-monospace,monospace}.history{display:flex;gap:5px;margin-top:10px;overflow:hidden}.history-item{white-space:nowrap;border:1px solid rgba(255,255,255,.07);border-radius:99px;padding:4px 7px;font:9px ui-monospace,monospace;color:#888;max-width:145px;overflow:hidden;text-overflow:ellipsis}.history-item.active{color:#d3d0c7;border-color:rgba(198,230,207,.2)}.legacy{margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07);font:11px/1.45 Georgia,serif;color:#aaa69c}.fate{margin-top:7px;font:italic 11px/1.45 Georgia,serif;color:#aeb9ae;opacity:.86}#omen{position:absolute;left:50%;top:20%;transform:translate(-50%,-50%);z-index:9;font:500 15px Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#f2e5c9;opacity:0;transition:opacity .6s;text-shadow:0 3px 20px #000;pointer-events:none}@media(max-width:900px){.hud{width:280px}.chronicle{width:calc(100vw - 320px)}.story{font-size:13px}.worldchips{grid-template-columns:repeat(3,1fr)}}
-</style>
-</head><body><div id="app"><div id="world"></div><div class="brand"><h1>The Turning</h1><div class="sub">A life shaped by pressure, memory & chance</div></div><div id="omen"></div><div class="chronicle"><div class="eyebrow" id="dateLine">Year 1 · Early Spring</div><div class="chapter" id="chapter">Awakening beside the dead machine</div><div class="story" id="story">A traveler wakes in wet grass beneath a pale sky. Behind them, a machine large enough to have once carried a village sits silent and half-buried. They remember their name—Mara—but almost nothing else.</div><div class="meta"><span id="age">Age 24</span><span id="place">The Hollow</span><span id="generation">Life I</span><span id="population">Alone</span></div><div class="worldchips"><div class="worldchip"><b>Population</b><span id="popChip">1</span></div><div class="worldchip"><b>Cohesion</b><span id="cohesionChip">44</span></div><div class="worldchip"><b>Food</b><span id="foodChip">55</span></div><div class="worldchip"><b>Lore</b><span id="loreChip">0</span></div><div class="worldchip"><b>Echo</b><span id="echoChip">0</span></div></div><div class="history" id="history"></div><div class="legacy" id="legacyLine">No myths have survived long enough to become traditions.</div><div class="fate" id="fateLine">The shape of this life is still hidden.</div></div><aside class="hud"><div class="section"><div class="eyebrow">World Pressures</div><div id="sliders"></div></div><div class="section"><div class="eyebrow">Inner Weather</div><div class="pills" id="traits"></div><div class="soul" id="soulLine">Mara is wary, curious, and not yet certain what kind of person survival will require.</div></div><div class="section"><div class="eyebrow">Moral Tensions</div><div id="morals"></div></div><div class="section"><div class="eyebrow">Time & Retelling</div><div class="actions"><button class="btn primary" id="pauseBtn">Pause</button><button class="btn" id="speedBtn">1× Time</button><button class="btn" id="nudgeBtn">Turn the Wheel</button><button class="btn" id="rebirthBtn">Rebirth</button></div></div></aside></div><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script><script type="module">__MODULE__</script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>The Turning · What survives a life</title>
+    <style>
+      __STYLE__
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <a class="brand" href="#" aria-label="The Turning home"
+          ><span class="brand-orbit">◌</span
+          ><span
+            >THE TURNING<small>A SMALL WORLD. A LONG MEMORY.</small></span
+          ></a
+        ><span class="edition">A NARRATIVE ECOLOGY <i></i> VOLUME II</span
+        ><button id="guideBtn" class="quiet-button">
+          How to watch <span>↗</span>
+        </button>
+      </header>
+      <main>
+        <section class="stage" aria-label="The Hollow diorama">
+          <div class="scene-intro">
+            <div class="eyebrow">
+              <i></i> <span id="sceneStatus">A LIFE NOT YET LIVED</span>
+            </div>
+            <h1>Some things survive<br /><em>forgetting.</em></h1>
+            <p id="sceneCaption">Seven strangers. One impossible place.</p>
+          </div>
+          <div id="world"></div>
+          <div id="worldError" hidden>
+            The view could not load. Reload in a browser with WebGL enabled.
+          </div>
+          <div class="season-badge">
+            <span id="seasonIcon">✳</span>
+            <div id="dateLine">Year 1 · Early Spring</div>
+            <small id="phaseLabel">THE GATHERING</small>
+          </div>
+          <div id="maraLabel" class="person-label">
+            <i></i> MARA <span id="maraHealth">100</span>
+            <div><b id="healthBar"></b></div>
+          </div>
+          <div class="world-caption">
+            <span>THE HOLLOW</span
+            ><small id="worldDescription"
+              >Where the unknown becomes a home.</small
+            >
+          </div>
+          <div class="camera-tools">
+            <button
+              id="homeCamera"
+              title="View the whole refuge"
+              aria-label="View the whole refuge"
+            >
+              ⌂</button
+            ><button
+              id="followCamera"
+              title="Follow Mara"
+              aria-label="Follow Mara"
+              aria-pressed="false"
+            >
+              ⌕</button
+            ><button
+              id="orbitCamera"
+              title="Slow orbit"
+              aria-label="Toggle slow orbit"
+              aria-pressed="false"
+            >
+              ◎
+            </button>
+          </div>
+          <div id="omen" role="status"></div>
+          <div class="transport">
+            <button
+              id="pauseBtn"
+              class="play primary"
+              aria-label="Begin watching"
+            >
+              ▶
+            </button>
+            <div class="play-copy">
+              <strong id="playTitle">Let a life unfold.</strong
+              ><span id="playSub"
+                >You shape the world. Mara chooses the life.</span
+              >
+            </div>
+            <div class="speed-control" aria-label="Playback speed">
+              <button data-speed="1" class="active" aria-pressed="true">
+                1×</button
+              ><button data-speed="2" aria-pressed="false">2×</button
+              ><button data-speed="4" aria-pressed="false">4×</button>
+            </div>
+            <button
+              id="nudgeBtn"
+              class="next-button"
+              title="Advance exactly one season"
+            >
+              Next season <span>↗</span>
+            </button>
+            <div class="time-track"><i id="timeProgress"></i></div>
+          </div>
+        </section>
+        <aside class="inspector">
+          <div class="inspector-heading">
+            <span class="eyebrow">THE WATCHER'S NOTEBOOK</span
+            ><span class="notebook-star">✧</span>
+          </div>
+          <div class="tabs" role="tablist" aria-label="Notebook">
+            <button
+              id="tab-world"
+              role="tab"
+              aria-selected="true"
+              aria-controls="panel-world"
+              tabindex="0"
+              data-tab="world"
+            >
+              The world</button
+            ><button
+              id="tab-mara"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-mara"
+              tabindex="-1"
+              data-tab="mara"
+            >
+              Mara</button
+            ><button
+              id="tab-echoes"
+              role="tab"
+              aria-selected="false"
+              aria-controls="panel-echoes"
+              tabindex="-1"
+              data-tab="echoes"
+            >
+              Echoes <span id="echoCount">0</span>
+            </button>
+          </div>
+          <section
+            id="panel-world"
+            class="tab-panel"
+            role="tabpanel"
+            aria-labelledby="tab-world"
+          >
+            <h2>Give the world<br />a nature.</h2>
+            <p class="muted">
+              These are pressures, not commands.<br />Change them at any point
+              in a life.
+            </p>
+            <div class="presets">
+              <button data-preset="haven" class="selected">
+                A place to belong</button
+              ><button data-preset="mystery">Behind the veil</button
+              ><button data-preset="trial">Against the dark</button>
+            </div>
+            <div id="sliders"></div>
+            <div class="thread">
+              <label for="seedInput"
+                >THREAD OF FATE <span>REPLAYABLE SEED</span></label
+              >
+              <div>
+                <input
+                  id="seedInput"
+                  maxlength="60"
+                  value="HOLLOW-01"
+                  spellcheck="false"
+                /><button
+                  id="newThread"
+                  aria-label="Start a new thread"
+                  title="Start a fresh world with this seed"
+                >
+                  ↗
+                </button>
+              </div>
+            </div>
+          </section>
+          <section
+            id="panel-mara"
+            class="tab-panel"
+            role="tabpanel"
+            aria-labelledby="tab-mara"
+            hidden
+          >
+            <div class="person-title">
+              <h2>Mara</h2>
+              <span id="age">Age 24</span>
+            </div>
+            <p id="soulLine" class="reflection"></p>
+            <div class="vital-grid">
+              <div><span>HEALTH</span><b id="healthValue">100</b></div>
+              <div><span>HOPE</span><b id="hopeValue">56</b></div>
+              <div><span>BONDS</span><b id="bondsValue">0</b></div>
+              <div><span>SCARS</span><b id="scarsValue">0</b></div>
+            </div>
+            <div class="subheading">
+              INNER WEATHER <span>ARRIVAL → NOW</span>
+            </div>
+            <div id="traits"></div>
+            <div class="subheading">
+              MORAL TENSIONS <span>NO GOOD / EVIL SCORE</span>
+            </div>
+            <div id="morals"></div>
+            <p class="panel-note">
+              A conviction changes the odds.<br />It does not make a choice
+              inevitable.
+            </p>
+          </section>
+          <section
+            id="panel-echoes"
+            class="tab-panel"
+            role="tabpanel"
+            aria-labelledby="tab-echoes"
+            hidden
+          >
+            <h2>What the world<br />cannot forget.</h2>
+            <p class="muted">
+              A life leaves behind stories. Something smaller than memory can
+              cross into the next.
+            </p>
+            <div class="subheading">CARRIED INTO THIS LIFE</div>
+            <div id="echoes"></div>
+            <div class="subheading">BECOMING MYTH</div>
+            <div id="myths"></div>
+            <div class="subheading">FRAGMENTS OF THE TRUTH</div>
+            <div id="clues"></div>
+          </section>
+          <div class="notebook-footer">
+            <span id="generation">LIFE I</span
+            ><button id="rebirthBtn">Rebirth <span>↻</span></button>
+          </div>
+        </aside>
+      </main>
+      <section class="chronicle" aria-label="Current chapter">
+        <div class="chapter-heading">
+          <span class="eyebrow" id="chapterDate"
+            >THE FIRST PAGE / EARLY SPRING</span
+          ><button id="journalBtn" class="quiet-button">
+            Read the chronicle <span id="entryCount">01</span> ↗
+          </button>
+        </div>
+        <div class="story-grid">
+          <div>
+            <h2 id="chapter">The Gathering</h2>
+            <p id="story" class="story"></p>
+            <div id="consequences" class="consequences"></div>
+          </div>
+          <div class="refuge-notes">
+            <div class="subheading">AROUND THE HEARTH</div>
+            <div class="world-stats">
+              <div><b id="popChip">7</b><span>SOULS</span></div>
+              <div><b id="foodChip">43</b><span>FOOD</span></div>
+              <div><b id="cohesionChip">38</b><span>TRUST</span></div>
+              <div><b id="loreChip">0</b><span>LORE</span></div>
+            </div>
+            <p id="fateLine">No one knows what lies beyond the safe ground.</p>
+          </div>
+        </div>
+      </section>
+      <footer>
+        <span>PRESSURE · MEMORY · CHANCE</span
+        ><i>The world remembers what the person cannot.</i
+        ><button id="saveBtn">↓ Save this life</button>
+      </footer>
+    </div>
+    <dialog id="journal">
+      <div class="dialog-top">
+        <span class="eyebrow">THE RECORD OF A LIFE</span
+        ><button data-close="journal" aria-label="Close chronicle">×</button>
+      </div>
+      <h2>The things that happened.</h2>
+      <p class="muted">
+        Events, omens, and their consequences. The most recent page comes first.
+      </p>
+      <div id="journalEntries"></div>
+    </dialog>
+    <dialog id="guide">
+      <div class="dialog-top">
+        <span class="eyebrow">A FIELD GUIDE FOR THE WATCHER</span
+        ><button data-close="guide" aria-label="Close guide">×</button>
+      </div>
+      <h2>Set a world in motion.</h2>
+      <ol class="guide-steps">
+        <li>
+          <b>Give it a nature.</b
+          ><span
+            >Abundance, danger, and the other pressures change which events
+            become likely. The presets offer three starting moods.</span
+          >
+        </li>
+        <li>
+          <b>Begin watching.</b
+          ><span
+            >A season passes every 24 seconds at 1×. Pause to read, speed up, or
+            turn one season at a time. Background tabs hold time still.</span
+          >
+        </li>
+        <li>
+          <b>Look closer.</b
+          ><span
+            >Drag the world to orbit. Scroll or pinch to zoom. The magnifier
+            follows Mara; the house restores the whole refuge.</span
+          >
+        </li>
+        <li>
+          <b>Notice what remains.</b
+          ><span
+            >The chronicle records what actually happened. Open Mara's page to
+            see inner changes. Rebirth carries small, experience-shaped echoes
+            into another life.</span
+          >
+        </li>
+      </ol>
+      <p class="panel-note">
+        Save a chronicle before refreshing. This prototype keeps lives in the
+        current browser session.
+      </p>
+      <button data-close="guide" class="primary wide">
+        I’ll keep watch ↗
+      </button>
+    </dialog>
+    <dialog id="confirm">
+      <div class="dialog-top">
+        <span class="eyebrow">A TURN OF THE WHEEL</span
+        ><button data-close="confirm" aria-label="Cancel new beginning">
+          ×
+        </button>
+      </div>
+      <h2 id="confirmTitle"></h2>
+      <p id="confirmText" class="muted"></p>
+      <div class="dialog-actions">
+        <button id="confirmSave">Save this life ↓</button
+        ><button id="confirmGo" class="primary">Begin again ↗</button>
+      </div>
+    </dialog>
+    <dialog id="ending">
+      <div class="dialog-top">
+        <span class="eyebrow">SOMETHING SMALLER THAN MEMORY</span
+        ><button data-close="ending" aria-label="Return to the world">×</button>
+      </div>
+      <h2 id="endingTitle"></h2>
+      <p id="endingStory"></p>
+      <div class="subheading">WHAT MAY CROSS THE THRESHOLD</div>
+      <div id="endingEchoes"></div>
+      <div class="dialog-actions">
+        <button id="endingSave">Save this life ↓</button
+        ><button id="endingRebirth" class="primary">
+          Let another life begin ↗
+        </button>
+      </div>
+    </dialog>
+    <script type="importmap">
+      __IMPORTS__
+    </script>
+    <script type="module">
+      __MODULE__;
+    </script>
+  </body>
+</html>
