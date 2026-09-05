@@ -21,5 +21,9 @@ module = (
     + (root / "polish.js").read_text(encoding="utf-8")
     + "\n"
     + (root / "motion_fix.js").read_text(encoding="utf-8")
+    + "\n"
+    + (root / "premise.js").read_text(encoding="utf-8")
+    + "\n"
+    + (root / "refuge_visual.js").read_text(encoding="utf-8")
 )
 components.html(template.replace("__MODULE__", module), height=900, scrolling=False)
